@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useEffect } from "react";
+
 /**
  * CaptionBox — A reusable panel that displays either:
  *   • An editable textarea (for raw transcription)
@@ -25,6 +27,15 @@ export default function CaptionBox({
   onChange = null,
   id,
 }) {
+  const contentRef = useRef(null);
+
+  // Auto-scroll to bottom as content grows
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = contentRef.current.scrollHeight;
+    }
+  }, [content]);
+
   return (
     <div
       className="flex-1 min-w-0 bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-subtle)]
@@ -44,9 +55,10 @@ export default function CaptionBox({
       {/* Content area */}
       {editable ? (
         <textarea
+          ref={contentRef}
           id={id}
           className="flex-1 w-full p-5 text-[1.1rem] leading-[1.7] text-[var(--text-bright)]
-                     bg-[var(--bg-surface)] border-none resize-none outline-none
+                     bg-[var(--bg-surface)] border-none resize-none outline-none overflow-y-auto
                      placeholder:text-[var(--text-secondary)] placeholder:opacity-50
                      focus:ring-2 focus:ring-[var(--color-primary)]/30 transition-shadow min-h-[200px] md:min-h-[220px]"
           placeholder={placeholder}
@@ -56,9 +68,10 @@ export default function CaptionBox({
         />
       ) : (
         <div
+          ref={contentRef}
           id={id}
           className="flex-1 p-5 text-[1.1rem] leading-[1.7] text-[var(--text-bright)]
-                     whitespace-pre-wrap break-words min-h-[200px] md:min-h-[220px]"
+                     whitespace-pre-wrap break-words overflow-y-auto min-h-[200px] md:min-h-[220px]"
         >
           {content || (
             <span className="text-[var(--text-secondary)] opacity-50 italic">
