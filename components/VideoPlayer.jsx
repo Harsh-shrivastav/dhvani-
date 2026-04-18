@@ -78,28 +78,7 @@ export default function VideoPlayer({ textToPlay = "" }) {
 
     videoEl.onerror = () => {
       console.warn(`Video not found: ${currentItem.word}`);
-      
-      // Fallback to fingerspelling if it's a full word (not already a letter)
-      if (!currentItem.isLetterFallback && currentItem.word.length > 1) {
-        const letters = currentItem.word.toUpperCase().split("").filter(c => /[A-Z]/.test(c));
-        if (letters.length > 0) {
-          const letterItems = letters.map(char => ({
-            word: `${char} (spelling ${currentItem.word})`,
-            src: `/assets/${char}.mp4`,
-            isLetterFallback: true
-          }));
-          
-          setQueue(prev => {
-            const newQueue = [...prev];
-            newQueue.splice(currentIndex, 1, ...letterItems);
-            return newQueue;
-          });
-          return; // Do not increment index; let it play the first letter we just spliced in
-        }
-      }
-
-      // If it's already a letter fallback or has no valid letters, skip
-      setCurrentIndex((prev) => prev + 1);
+      setCurrentIndex((prev) => prev + 1); // Skip if missing
     };
 
     videoEl.onended = () => {
