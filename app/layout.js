@@ -9,7 +9,7 @@ const atkinson = Atkinson_Hyperlegible({
 });
 
 export const metadata = {
-  title: "Dhvani — Real-Time AI Captioning & Sign Language",
+  title: "Vaani — Real-Time AI Captioning & Sign Language",
   description:
     "Real-time speech-to-text captioning with AI simplification and Indian Sign Language video playback. Making every voice visible.",
   keywords: [

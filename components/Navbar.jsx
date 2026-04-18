@@ -44,7 +44,7 @@ export default function Navbar() {
           />
         </svg>
         <span className="text-[var(--color-primary-light)] font-bold text-xl tracking-tight">
-          Dhvani
+          Vaani
         </span>
       </div>
 

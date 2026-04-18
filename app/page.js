@@ -175,7 +175,7 @@ export default function Home() {
                   />
                 </svg>
               </span>
-              Dhvani
+              Vaani
             </h1>
             <p className="text-[var(--text-secondary)] text-lg">
               Real-time AI captioning with sign language assistance.

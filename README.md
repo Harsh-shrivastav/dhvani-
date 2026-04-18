@@ -1,11 +1,11 @@
-# Dhvani: Real-Time AI Captioning & Sign Language Assistance 🤟
+# Vaani: Real-Time AI Captioning & Sign Language Assistance 🤟
 
-Dhvani is a Next.js web application built for accessibility. It provides real-time, continuous speech-to-text transcription, utilizes Gemini AI to translate complex English into simplified, deaf-friendly captions, and automatically translates those simplified words into sequential Indian Sign Language (ISL) videos.
+Vaani is a Next.js web application built for accessibility. It provides real-time, continuous speech-to-text transcription, utilizes Gemini AI to translate complex English into simplified, deaf-friendly captions, and automatically translates those simplified words into sequential Indian Sign Language (ISL) videos.
 
 ## ✨ Features
 
 - **Continuous Speech Recognition:** Uses the Web Speech API to provide real-time, zero-latency transcription that automatically handles pauses and restarts.
-- **AI Simplification:** Integrates `gemini-3-flash-preview` via Next.js Edge API routes to simplify 10th-grade English into 5th-grade vocabulary.
+- **AI Simplification:** Integrates `gemini-2.0-flash` via Next.js Edge API routes to simplify 10th-grade English into 5th-grade vocabulary.
 - **Progressive Streaming:** Streams AI responses back to the client word-by-word to eliminate loading delays and provide a ChatGPT-like feel.
 - **Dynamic ISL Video Engine:** Parses the streaming AI output to automatically queue and play the corresponding `.mp4` sign language videos.
 - **Fingerspelling Fallback:** If a spoken word does not exist in the video dictionary, the engine dynamically breaks the word down and plays the individual A-Z letter videos seamlessly.
@@ -53,4 +53,4 @@ Dhvani is a Next.js web application built for accessibility. It provides real-ti
 
 ## 🎨 Design System
 
-Dhvani uses a scalable, modern design system built with Tailwind CSS. It features a violet/indigo gradient theme with glassmorphism touches and smooth micro-animations. Legacy UI styling was converted directly into CSS variables inside `globals.css` to easily support future light/dark mode iterations.
+Vaani uses a scalable, modern design system built with Tailwind CSS. It features a violet/indigo gradient theme with glassmorphism touches and smooth micro-animations. Legacy UI styling was converted directly into CSS variables inside `globals.css` to easily support future light/dark mode iterations.
