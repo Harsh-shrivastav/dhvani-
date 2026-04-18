@@ -67,11 +67,26 @@ export default function Home() {
         body: JSON.stringify({ text: textToSimplify }),
       });
       if (res.ok) {
-        const data = await res.json();
-        if (append) {
-          setSimplifiedText((prev) => prev + (prev ? " " : "") + data.simplified);
-        } else {
-          setSimplifiedText(data.simplified);
+        if (!append) {
+          setSimplifiedText(""); // Clear first if replacing
+        }
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let isFirstChunk = true;
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          
+          setSimplifiedText((prev) => {
+            let textToAppend = chunk;
+            if (append && isFirstChunk && prev && !prev.endsWith(" ")) {
+              textToAppend = " " + chunk;
+            }
+            isFirstChunk = false;
+            return prev + textToAppend;
+          });
         }
       }
     } catch (err) {

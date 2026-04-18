@@ -28,20 +28,33 @@ export async function POST(request) {
 
     const prompt = `Convert this to simple English for deaf students. Use short, clear sentences with 5th-grade vocabulary. Return ONLY the simplified text, nothing else: "${text}"`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    let simplified = response.text();
+    const result = await model.generateContentStream(prompt);
 
-    // Clean any AI artifacts (brackets, preamble, etc.)
-    simplified = simplified
-      .replace(/\[.*?\]/g, "")
-      .replace(/^(Sure|Here.*?:)/i, "")
-      .trim();
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of result.stream) {
+            let chunkText = chunk.text();
+            // Basic cleanup on the fly
+            chunkText = chunkText.replace(/\[.*?\]/g, "").replace(/^(Sure|Here.*?:)/i, "");
+            if (chunkText) {
+              controller.enqueue(new TextEncoder().encode(chunkText));
+            }
+          }
+          controller.close();
+        } catch (e) {
+          controller.error(e);
+        }
+      }
+    });
 
-    return Response.json(
-      { simplified: simplified || text },
-      { status: 200 }
-    );
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/plain",
+        "Cache-Control": "no-cache",
+      }
+    });
   } catch (error) {
     console.error("Simplify API error:", error);
 
