@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import ControlPanel from "@/components/ControlPanel";
 import CaptionBox from "@/components/CaptionBox";
@@ -23,6 +23,10 @@ export default function Home() {
   // (initialized from transcript, but user can edit freely)
   const [rawText, setRawText] = useState("");
 
+  // State for simplified text from Gemini API
+  const [simplifiedText, setSimplifiedText] = useState("");
+  const [isSimplifying, setIsSimplifying] = useState(false);
+
   // Sync transcript into raw text when new final results arrive
   // We show: accumulated transcript + current interim text
   const displayRawText = rawText || transcript;
@@ -36,6 +40,7 @@ export default function Home() {
       stopListening();
     } else {
       setRawText(""); // fresh session
+      setSimplifiedText("");
       startListening();
     }
   };
@@ -44,6 +49,40 @@ export default function Home() {
   const handleClear = () => {
     clearTranscript();
     setRawText("");
+    setSimplifiedText("");
+  };
+
+  // Gemini API call
+  const handleSimplify = async (textToSimplify) => {
+    if (!textToSimplify || textToSimplify.trim().length === 0) return;
+    setIsSimplifying(true);
+    try {
+      const res = await fetch("/api/simplify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: textToSimplify }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSimplifiedText(data.simplified);
+      }
+    } catch (err) {
+      console.error("Simplification error:", err);
+    } finally {
+      setIsSimplifying(false);
+    }
+  };
+
+  // Auto-simplify when final transcript updates
+  useEffect(() => {
+    if (transcript) {
+      handleSimplify(transcript);
+    }
+  }, [transcript]);
+
+  // Manual Re-Simplify
+  const handleReSimplify = () => {
+    handleSimplify(rawText || transcript);
   };
 
   // When user manually edits the raw text box
@@ -139,12 +178,14 @@ export default function Home() {
               placeholder="Your raw speech text will appear here…"
               actions={
                 <button
+                  onClick={handleReSimplify}
+                  disabled={isSimplifying}
                   className="text-xs px-3 py-1.5 rounded-md border border-[var(--border-subtle)]
                              bg-[var(--bg-surface)] text-[var(--text-secondary)]
                              hover:text-[var(--color-primary-light)] hover:border-[var(--border-hover)]
-                             transition-all duration-200 cursor-pointer"
+                             transition-all duration-200 cursor-pointer disabled:opacity-50"
                 >
-                  Re-Simplify
+                  {isSimplifying ? "Processing..." : "Re-Simplify"}
                 </button>
               }
             />
@@ -155,7 +196,7 @@ export default function Home() {
               title="Deaf-Friendly Caption"
               icon="💬"
               editable={false}
-              content={isListening && !transcript ? "🎧 Listening…" : ""}
+              content={isSimplifying ? "Processing..." : (simplifiedText || (isListening && !transcript ? "🎧 Listening…" : ""))}
               placeholder="Simplified text will appear here…"
             />
 
