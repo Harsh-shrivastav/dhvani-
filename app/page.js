@@ -201,7 +201,7 @@ export default function Home() {
             />
 
             {/* Sign language video player */}
-            <VideoPlayer />
+            <VideoPlayer textToPlay={simplifiedText} />
           </section>
         </div>
       </main>
