@@ -29,6 +29,10 @@ export default function Home() {
   
   // Track how much of the transcript we've already processed to avoid re-sending the whole history
   const processedLengthRef = useRef(0);
+  
+  // Throttle refs
+  const lastRequestTimeRef = useRef(0);
+  const throttleTimerRef = useRef(null);
 
   // Sync transcript into raw text when new final results arrive
   // We show: accumulated transcript + current interim text
@@ -105,9 +109,23 @@ export default function Home() {
     
     // Only send the newly spoken words to the AI, not the entire history
     if (transcript.length > processedLengthRef.current) {
-      const newChunk = transcript.slice(processedLengthRef.current);
-      processedLengthRef.current = transcript.length;
-      handleSimplify(newChunk, true);
+      const now = Date.now();
+      const timeSinceLast = now - lastRequestTimeRef.current;
+      const throttleMs = 500; // 500ms delay
+
+      const sendDelta = () => {
+        const newChunk = transcript.slice(processedLengthRef.current);
+        processedLengthRef.current = transcript.length;
+        lastRequestTimeRef.current = Date.now();
+        handleSimplify(newChunk, true);
+      };
+
+      if (timeSinceLast >= throttleMs) {
+        sendDelta();
+      } else {
+        if (throttleTimerRef.current) clearTimeout(throttleTimerRef.current);
+        throttleTimerRef.current = setTimeout(sendDelta, throttleMs - timeSinceLast);
+      }
     }
   }, [transcript]);
 
