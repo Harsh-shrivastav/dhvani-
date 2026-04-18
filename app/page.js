@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import ControlPanel from "@/components/ControlPanel";
 import CaptionBox from "@/components/CaptionBox";
@@ -26,6 +26,9 @@ export default function Home() {
   // State for simplified text from Gemini API
   const [simplifiedText, setSimplifiedText] = useState("");
   const [isSimplifying, setIsSimplifying] = useState(false);
+  
+  // Track how much of the transcript we've already processed to avoid re-sending the whole history
+  const processedLengthRef = useRef(0);
 
   // Sync transcript into raw text when new final results arrive
   // We show: accumulated transcript + current interim text
@@ -50,10 +53,11 @@ export default function Home() {
     clearTranscript();
     setRawText("");
     setSimplifiedText("");
+    processedLengthRef.current = 0;
   };
 
   // Gemini API call
-  const handleSimplify = async (textToSimplify) => {
+  const handleSimplify = async (textToSimplify, append = true) => {
     if (!textToSimplify || textToSimplify.trim().length === 0) return;
     setIsSimplifying(true);
     try {
@@ -64,7 +68,11 @@ export default function Home() {
       });
       if (res.ok) {
         const data = await res.json();
-        setSimplifiedText(data.simplified);
+        if (append) {
+          setSimplifiedText((prev) => prev + (prev ? " " : "") + data.simplified);
+        } else {
+          setSimplifiedText(data.simplified);
+        }
       }
     } catch (err) {
       console.error("Simplification error:", err);
@@ -75,14 +83,24 @@ export default function Home() {
 
   // Auto-simplify when final transcript updates
   useEffect(() => {
-    if (transcript) {
-      handleSimplify(transcript);
+    if (!transcript) {
+      processedLengthRef.current = 0;
+      return;
+    }
+    
+    // Only send the newly spoken words to the AI, not the entire history
+    if (transcript.length > processedLengthRef.current) {
+      const newChunk = transcript.slice(processedLengthRef.current);
+      processedLengthRef.current = transcript.length;
+      handleSimplify(newChunk, true);
     }
   }, [transcript]);
 
   // Manual Re-Simplify
   const handleReSimplify = () => {
-    handleSimplify(rawText || transcript);
+    const textToProcess = rawText || transcript;
+    processedLengthRef.current = textToProcess.length; // reset tracker
+    handleSimplify(textToProcess, false);
   };
 
   // When user manually edits the raw text box
