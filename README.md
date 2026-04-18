@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Dhvani: Real-Time AI Captioning & Sign Language Assistance 🤟
 
-## Getting Started
+Dhvani is a Next.js web application built for accessibility. It provides real-time, continuous speech-to-text transcription, utilizes Gemini AI to translate complex English into simplified, deaf-friendly captions, and automatically translates those simplified words into sequential Indian Sign Language (ISL) videos.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Continuous Speech Recognition:** Uses the Web Speech API to provide real-time, zero-latency transcription that automatically handles pauses and restarts.
+- **AI Simplification:** Integrates `gemini-3-flash-preview` via Next.js Edge API routes to simplify 10th-grade English into 5th-grade vocabulary.
+- **Progressive Streaming:** Streams AI responses back to the client word-by-word to eliminate loading delays and provide a ChatGPT-like feel.
+- **Dynamic ISL Video Engine:** Parses the streaming AI output to automatically queue and play the corresponding `.mp4` sign language videos.
+- **Fingerspelling Fallback:** If a spoken word does not exist in the video dictionary, the engine dynamically breaks the word down and plays the individual A-Z letter videos seamlessly.
+- **Long Conversation Support:** The UI auto-scrolls to the bottom automatically and only sends delta word updates to the AI, ensuring the browser and API never get overwhelmed during long conversations.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Tech Stack
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS (Dark Mode by default)
+- **AI:** Google Generative AI SDK (`@google/generative-ai`)
+- **Speech Engine:** Native Browser Web Speech API (`webkitSpeechRecognition`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Getting Started
 
-## Learn More
+### Prerequisites
+- Node.js 18.17 or later
+- A valid Gemini API Key
+- Google Chrome or Microsoft Edge (required for Web Speech API support)
 
-To learn more about Next.js, take a look at the following resources:
+### Installation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Set up your environment variables:
+   Create a `.env.local` file in the root directory and add your Gemini key:
+   ```
+   GEMINI_API_KEY=your_api_key_here
+   ```
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📂 Project Structure
 
-## Deploy on Vercel
+- `/app`: Next.js 16 App Router pages and layout
+- `/app/api/simplify`: Next.js Edge API route for Gemini AI integration
+- `/components`: Modular React components (`Navbar`, `ControlPanel`, `CaptionBox`, `VideoPlayer`)
+- `/hooks`: Custom React hooks (`useSpeechRecognition`)
+- `/public/assets`: 151 individual `.mp4` Indian Sign Language videos (A-Z and common words)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 Design System
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Dhvani uses a scalable, modern design system built with Tailwind CSS. It features a violet/indigo gradient theme with glassmorphism touches and smooth micro-animations. Legacy UI styling was converted directly into CSS variables inside `globals.css` to easily support future light/dark mode iterations.
