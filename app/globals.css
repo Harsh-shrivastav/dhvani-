@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════
+   Dhvani — Design System (migrated from Vaani V1)
+   ═══════════════════════════════════════════════ */
+
+/* --- CSS Custom Properties (from legacy style.css) --- */
+:root {
+  /* Core palette — violet / indigo spectrum */
+  --color-primary: #8b5cf6;
+  --color-primary-light: #a78bfa;
+  --color-primary-lighter: #c4b5fd;
+  --color-primary-glow: rgba(99, 102, 241, 0.4);
+  --color-accent: #6366f1;
+  --color-accent-pink: #ec4899;
+
+  /* Dark theme (default) */
+  --bg-body: #121212;
+  --bg-surface: #1e1e1e;
+  --bg-elevated: #2a2a2a;
+  --bg-nav: #181818;
+
+  --text-primary: #e0e0e0;
+  --text-secondary: #9ca3af;
+  --text-bright: #f3f4f6;
+  --text-heading: #ffffff;
+
+  --border-subtle: rgba(139, 92, 246, 0.1);
+  --border-hover: rgba(139, 92, 246, 0.3);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 12px 32px rgba(99, 102, 241, 0.25);
+  --shadow-nav: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Light theme overrides */
+.light-mode {
+  --bg-body: #f7f7ff;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f0f0f0;
+  --bg-nav: #ffffff;
+
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --text-bright: #222222;
+  --text-heading: #111111;
+
+  --border-subtle: #ddd;
+  --border-hover: rgba(139, 92, 246, 0.3);
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --shadow-card-hover: 0 12px 40px rgba(167, 139, 250, 0.3);
+  --shadow-nav: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Tailwind theme extension --- */
+@theme inline {
+  --color-background: var(--bg-body);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-nav: var(--bg-nav);
+  --color-primary: var(--color-primary);
+  --color-primary-light: var(--color-primary-light);
+  --color-accent: var(--color-accent);
+  --color-accent-pink: var(--color-accent-pink);
+  --font-sans: "Atkinson Hyperlegible", sans-serif;
+}
+
+/* --- Base resets --- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  font-family: "Atkinson Hyperlegible", sans-serif;
+  margin: 0;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* --- Gradient text utility --- */
+.gradient-text {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-pink {
+  background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- CC Pulse animation (from legacy) --- */
+@keyframes ccPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 6px rgba(167, 139, 250, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 16px rgba(167, 139, 250, 0.9));
+  }
+}
+
+.animate-cc-pulse {
+  animation: ccPulse 1.5s infinite ease-in-out;
+}
+
+/* --- Listening ring pulse --- */
+@keyframes listenPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(139, 92, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+  }
+}
+
+.animate-listen-pulse {
+  animation: listenPulse 1.5s infinite;
+}
+
+/* --- Fade-in-up entrance --- */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* --- Scrollbar styling (dark theme) --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-body);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-light);
+}
