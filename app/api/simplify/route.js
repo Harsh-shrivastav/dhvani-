@@ -22,7 +22,7 @@ export async function POST(request) {
       );
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
     const prompt = `Convert this to simple English for deaf students. Use short, clear sentences with 5th-grade vocabulary. Return ONLY the simplified text, nothing else: "${text}"`;
 
