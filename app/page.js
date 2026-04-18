@@ -1,11 +1,56 @@
 "use client";
 
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import ControlPanel from "@/components/ControlPanel";
 import CaptionBox from "@/components/CaptionBox";
 import VideoPlayer from "@/components/VideoPlayer";
+import useSpeechRecognition from "@/hooks/useSpeechRecognition";
 
 export default function Home() {
+  const {
+    isListening,
+    isSupported,
+    transcript,
+    interimText,
+    startListening,
+    stopListening,
+    clearTranscript,
+    error,
+  } = useSpeechRecognition();
+
+  // Local state for the editable raw text box
+  // (initialized from transcript, but user can edit freely)
+  const [rawText, setRawText] = useState("");
+
+  // Sync transcript into raw text when new final results arrive
+  // We show: accumulated transcript + current interim text
+  const displayRawText = rawText || transcript;
+  const liveRawText = interimText
+    ? displayRawText + interimText
+    : displayRawText;
+
+  // Handle toggle
+  const handleToggle = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      setRawText(""); // fresh session
+      startListening();
+    }
+  };
+
+  // Handle clear
+  const handleClear = () => {
+    clearTranscript();
+    setRawText("");
+  };
+
+  // When user manually edits the raw text box
+  const handleRawTextChange = (value) => {
+    setRawText(value);
+  };
+
   return (
     <>
       {/* Navigation */}
@@ -47,9 +92,35 @@ export default function Home() {
             </p>
           </header>
 
+          {/* ─── Browser support warning ─── */}
+          {!isSupported && (
+            <div className="w-full max-w-lg mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm text-center">
+              ⚠️ Speech recognition is not supported in this browser. Please use Chrome or Edge.
+            </div>
+          )}
+
+          {/* ─── Error banner ─── */}
+          {error && (
+            <div className="w-full max-w-lg mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 text-sm text-center">
+              {error}
+            </div>
+          )}
+
+          {/* ─── Listening indicator ─── */}
+          {isListening && (
+            <div className="mb-4 flex items-center gap-2 text-[var(--color-primary-light)] text-sm animate-pulse">
+              <span className="inline-block w-2.5 h-2.5 rounded-full bg-red-500" />
+              Listening… speak clearly into your microphone
+            </div>
+          )}
+
           {/* ─── Controls ─── */}
           <section className="w-full mb-8 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            <ControlPanel />
+            <ControlPanel
+              isListening={isListening}
+              onToggle={handleToggle}
+              onClear={handleClear}
+            />
           </section>
 
           {/* ─── Caption panels + Video player ─── */}
@@ -63,6 +134,8 @@ export default function Home() {
               title="Raw Transcription"
               icon="✏️"
               editable={true}
+              content={liveRawText}
+              onChange={handleRawTextChange}
               placeholder="Your raw speech text will appear here…"
               actions={
                 <button
@@ -82,6 +155,7 @@ export default function Home() {
               title="Deaf-Friendly Caption"
               icon="💬"
               editable={false}
+              content={isListening && !transcript ? "🎧 Listening…" : ""}
               placeholder="Simplified text will appear here…"
             />
 

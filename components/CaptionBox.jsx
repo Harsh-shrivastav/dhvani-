@@ -5,13 +5,14 @@
  *   • An editable textarea (for raw transcription)
  *   • A read-only div (for simplified / deaf-friendly output)
  *
- * Props (all optional, filled in later steps):
+ * Props:
  *   title       — header label
  *   icon        — emoji or element
  *   editable    — if true renders a <textarea>
- *   content     — current text value
+ *   content     — current text value (controlled)
  *   placeholder — placeholder text
  *   actions     — optional React node rendered in header (e.g. button)
+ *   onChange    — callback(newValue) for editable mode
  */
 
 export default function CaptionBox({
@@ -21,6 +22,7 @@ export default function CaptionBox({
   content = "",
   placeholder = "",
   actions = null,
+  onChange = null,
   id,
 }) {
   return (
@@ -48,7 +50,9 @@ export default function CaptionBox({
                      placeholder:text-[var(--text-secondary)] placeholder:opacity-50
                      focus:ring-2 focus:ring-[var(--color-primary)]/30 transition-shadow min-h-[200px] md:min-h-[220px]"
           placeholder={placeholder}
-          defaultValue={content}
+          value={content}
+          onChange={onChange ? (e) => onChange(e.target.value) : undefined}
+          readOnly={!onChange}
         />
       ) : (
         <div
